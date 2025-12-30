@@ -44,6 +44,36 @@ body{
   margin-bottom: 14px;
   backdrop-filter: blur(8px);
 }
+.card.hero{
+  position: relative;
+  overflow: hidden;
+}
+.card.hero::after{
+  content:"";
+  position:absolute;
+  right:-16px;
+  top:-24px;
+  width:120px;
+  height:120px;
+  background: url("assets/illustrations/orb.svg") no-repeat center/contain;
+  opacity:0.6;
+  pointer-events:none;
+}
+.card.wave{
+  position: relative;
+  overflow: hidden;
+}
+.card.wave::after{
+  content:"";
+  position:absolute;
+  left:-20px;
+  bottom:-10px;
+  width:160px;
+  height:60px;
+  background: url("assets/illustrations/wave.svg") no-repeat left bottom/contain;
+  opacity:0.5;
+  pointer-events:none;
+}
 .screen-title{
   font-family: var(--font-title);
   font-size:24px;
@@ -124,6 +154,14 @@ body{
   display:flex; align-items:center; justify-content:center;
 }
 .pet img{width:78px; height:78px}
+.pet.tiny{
+  width:56px;
+  height:56px;
+  border-radius:16px;
+}
+.pet.tiny img{width:44px; height:44px}
+.pet.locked img{filter: grayscale(1) opacity(0.45)}
+.petRow{display:flex; gap:8px; flex-wrap:wrap}
 .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
 .chip{
   border:1px solid var(--line);
@@ -182,10 +220,36 @@ input[type="range"]{width:100%}
   border-radius:16px;
 }
 .tab-icon{
-  width:12px; height:12px;
+  width:14px; height:14px;
   border-radius:50%;
   border:1px solid rgba(160,173,185,.9);
-  background: rgba(210,222,232,.6);
+  background-color: rgba(140,153,165,.9);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 12px 12px;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 12px 12px;
+}
+.tab[data-icon="home"] .tab-icon{
+  mask-image: url("assets/icons/home.svg");
+  -webkit-mask-image: url("assets/icons/home.svg");
+}
+.tab[data-icon="checkin"] .tab-icon{
+  mask-image: url("assets/icons/checkin.svg");
+  -webkit-mask-image: url("assets/icons/checkin.svg");
+}
+.tab[data-icon="breath"] .tab-icon{
+  mask-image: url("assets/icons/breath.svg");
+  -webkit-mask-image: url("assets/icons/breath.svg");
+}
+.tab[data-icon="journal"] .tab-icon{
+  mask-image: url("assets/icons/journal.svg");
+  -webkit-mask-image: url("assets/icons/journal.svg");
+}
+.tab[data-icon="profile"] .tab-icon{
+  mask-image: url("assets/icons/profile.svg");
+  -webkit-mask-image: url("assets/icons/profile.svg");
 }
 .tab.active{
   color:var(--ink);
@@ -193,7 +257,7 @@ input[type="range"]{width:100%}
   border:1px solid rgba(214,223,232,.9);
 }
 .tab.active .tab-icon{
-  background: rgba(111,191,159,.75);
+  background-color: rgba(111,191,159,.9);
   border-color: rgba(79,165,127,.7);
 }
 .toast{

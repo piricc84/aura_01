@@ -33,11 +33,28 @@
   function saveState(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
 
   let state = loadState();
+  const sounds = {
+    bell: new Audio("assets/audio/bell.wav"),
+    breeze: new Audio("assets/audio/breeze.wav"),
+    rain: new Audio("assets/audio/rain.wav")
+  };
+  Object.values(sounds).forEach((s) => {
+    s.preload = "auto";
+    s.volume = 0.35;
+  });
 
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  function playSound(key) {
+    if (!state.profile.sound) return;
+    const s = sounds[key];
+    if (!s) return;
+    s.currentTime = 0;
+    s.play().catch(() => {});
   }
 
   function vibrate(pattern = [10]) {
@@ -91,6 +108,10 @@
     const lvl = state.pet.level;
     return ["Germoglio", "Fiore", "Lanterna", "Totem", "Aura Maestra"][lvl - 1] || "Germoglio";
   }
+  function petImage() {
+    const lvl = Math.min(5, Math.max(1, state.pet.level));
+    return `assets/pets/pet-${lvl}.svg`;
+  }
 
   function supportiveMessage() {
     const m = state.pet.mood, e = state.pet.energy;
@@ -113,7 +134,7 @@
 
   function headerCard(title, subtitle) {
     return `
-      <section class="card">
+      <section class="card hero">
         <div class="screen-title">${title}</div>
         <div class="screen-sub">${subtitle}</div>
       </section>
@@ -122,7 +143,7 @@
 
   function rangeField(label, id, val, left, right) {
     return `
-      <section class="card">
+      <section class="card wave">
         <div class="card-row">
           <div>
             <div class="card-title">${label}</div>
@@ -337,7 +358,7 @@
           <button class="pill-btn ghost" data-link="/insights">Azione</button>
         </div>
         <div class="petWrap">
-          <div class="pet"><img src="assets/pet.svg" alt="Pet"/></div>
+          <div class="pet"><img src="${petImage()}" alt="Pet"/></div>
           <div style="flex:1">
             <div class="small">${supportiveMessage()}</div>
             <div class="grid2" style="margin-top:10px;">
@@ -414,6 +435,7 @@
       evolvePetFromLastCheckin(ci);
       saveState(state);
       vibrate([12, 30, 12]);
+      playSound("bell");
       showToast("Check-in salvato.");
       location.hash = "#/home";
     });
@@ -479,6 +501,7 @@
       if (t <= 0) {
         clearInterval(iv); iv = null;
         setPhase("Fatto.");
+        playSound("bell");
         showToast("Ottimo. Un passo alla volta.");
       }
     }
@@ -487,6 +510,7 @@
       if (iv) return;
       t = 60; timerEl.textContent = "60s";
       setPhase("Inspira");
+      playSound("breeze");
       iv = setInterval(tick, 1000);
     });
     $("#stop").addEventListener("click", () => {
@@ -561,6 +585,7 @@
       }
       saveState(state);
       vibrate([10]);
+      playSound("rain");
       showToast("Nota salvata.");
       location.hash = "#/home";
     });
@@ -626,6 +651,11 @@
         <div class="grid2" style="margin-top:10px;">
           <div class="kpi"><div class="k">Livello</div><div class="v">${state.pet.level}</div></div>
           <div class="kpi"><div class="k">Streak</div><div class="v">${state.pet.streak}</div></div>
+        </div>
+        <div class="petRow" style="margin-top:10px;">
+          ${[1,2,3,4,5].map((lvl) => `
+            <div class="pet tiny ${lvl <= state.pet.level ? "" : "locked"}"><img src="assets/pets/pet-${lvl}.svg" alt="Pet livello ${lvl}"/></div>
+          `).join("")}
         </div>
       </section>
       <section class="card">

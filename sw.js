@@ -1,5 +1,5 @@
 // AURA - Studio Zen offline-first cache
-const CACHE = "aura-cache-v2";
+const CACHE = "aura-cache-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,6 +9,23 @@ const ASSETS = [
   "./assets/logo.svg",
   "./assets/pet.svg",
   "./assets/bg.svg",
+  "./assets/icons/home.svg",
+  "./assets/icons/checkin.svg",
+  "./assets/icons/breath.svg",
+  "./assets/icons/journal.svg",
+  "./assets/icons/profile.svg",
+  "./assets/icons/icon-192.png",
+  "./assets/icons/icon-512.png",
+  "./assets/illustrations/orb.svg",
+  "./assets/illustrations/wave.svg",
+  "./assets/pets/pet-1.svg",
+  "./assets/pets/pet-2.svg",
+  "./assets/pets/pet-3.svg",
+  "./assets/pets/pet-4.svg",
+  "./assets/pets/pet-5.svg",
+  "./assets/audio/bell.wav",
+  "./assets/audio/breeze.wav",
+  "./assets/audio/rain.wav",
   "./assets/mockups/01_onboarding.png",
   "./assets/mockups/02_login.png",
   "./assets/mockups/03_home_pet.png",
