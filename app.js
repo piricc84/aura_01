@@ -9,7 +9,17 @@
   const todayKey = (d = new Date()) => d.toISOString().slice(0, 10);
 
   const defaultState = {
-    profile: { name: "", goal: "Calma", reminders: true, sound: true, haptics: true, onboarded: false },
+    profile: {
+      name: "",
+      goal: "Calma",
+      reminders: true,
+      sound: true,
+      haptics: true,
+      onboarded: false,
+      theme: "mist",
+      accent: "sage",
+      petAccessory: "none"
+    },
     pet: { level: 1, mood: 6, energy: 6, streak: 0, lastCheckInDay: null },
     checkins: []
   };
@@ -122,6 +132,30 @@
     return "Un passo alla volta. Un respiro, poi scegli la prossima micro-azione.";
   }
 
+  function petExpression() {
+    const m = state.pet.mood, e = state.pet.energy;
+    if (m >= 8) return "happy";
+    if (m <= 3) return "sad";
+    if (e <= 3) return "tired";
+    return "calm";
+  }
+
+  function applyTheme() {
+    const theme = state.profile.theme || "mist";
+    const accent = state.profile.accent || "sage";
+    const accents = {
+      sage: { soft: "#95d5b2", base: "#6fbf9f", strong: "#4fa57f" },
+      sky: { soft: "#a6d8f0", base: "#78b7d8", strong: "#4f8fb3" },
+      sand: { soft: "#f7d49a", base: "#f2c36b", strong: "#d8a24c" },
+      rose: { soft: "#f2c1cc", base: "#c88fa0", strong: "#a76a7c" }
+    };
+    const pick = accents[accent] || accents.sage;
+    document.body.dataset.bg = theme;
+    document.documentElement.style.setProperty("--accent-soft", pick.soft);
+    document.documentElement.style.setProperty("--accent", pick.base);
+    document.documentElement.style.setProperty("--accent-strong", pick.strong);
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
@@ -220,6 +254,7 @@
     const route = hash.replace("#", "");
     const fn = routes[route] || renderHome;
 
+    applyTheme();
     if (!state.profile.onboarded && route !== "/") {
       location.hash = "#/"; return;
     }
@@ -347,9 +382,12 @@
 
   function renderHome() {
     const avg = avgLast7();
+    const expression = petExpression();
+    const energyTag = state.pet.energy <= 3 ? "low" : "ok";
+    const accessory = state.profile.petAccessory || "none";
     view.innerHTML = `
       ${headerCard("Casa", "Il tuo compagno zen oggi")}
-      <section class="card">
+      <section class="card hero">
         <div class="card-row">
           <div>
             <div class="card-title">Stato</div>
@@ -358,7 +396,17 @@
           <button class="pill-btn ghost" data-link="/insights">Azione</button>
         </div>
         <div class="petWrap">
-          <div class="pet"><img src="${petImage()}" alt="Pet"/></div>
+          <div class="pet" data-expression="${expression}" data-energy="${energyTag}" data-accessory="${accessory}">
+            <img src="${petImage()}" alt="Pet"/>
+            <div class="pet-face">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="cheek left"></span>
+              <span class="cheek right"></span>
+              <span class="mouth"></span>
+            </div>
+            <div class="pet-glow" aria-hidden="true"></div>
+          </div>
           <div style="flex:1">
             <div class="small">${supportiveMessage()}</div>
             <div class="grid2" style="margin-top:10px;">
@@ -370,6 +418,7 @@
           </div>
         </div>
         <div class="small" style="margin-top:10px;">Livello ${state.pet.level} - ${petLabel()}</div>
+        <div class="small">Tocca il pet per una reazione gentile.</div>
       </section>
 
       <section class="card">
@@ -399,6 +448,24 @@
         <div class="small" style="margin-top:10px;">Ultimi 7 giorni: ${avg.n ? `${avg.n} check-in` : "nessun dato ancora"}</div>
       </section>
     `;
+    const petEl = view.querySelector(".pet");
+    if (petEl) {
+      petEl.addEventListener("click", () => {
+        petEl.classList.remove("is-petted");
+        void petEl.offsetWidth;
+        petEl.classList.add("is-petted");
+        vibrate([8]);
+        playSound("breeze");
+        const hints = [
+          "Respira con me.",
+          "Piccolo passo, grande sollievo.",
+          "Sono qui, un minuto alla volta.",
+          "Hai fatto bene a fermarti.",
+          "Un respiro, poi scegli."
+        ];
+        showToast(hints[Math.floor(Math.random() * hints.length)]);
+      });
+    }
   }
 
   function renderCheckin() {
@@ -687,6 +754,44 @@
       <section class="card">
         <div class="card-row">
           <div>
+            <div class="card-title">Tema</div>
+            <div class="card-sub">Atmosfera e sfondo</div>
+          </div>
+          <button class="pill-btn ghost">Azione</button>
+        </div>
+        <div class="chip-row">
+          ${[
+            { id: "mist", label: "Nebbia" },
+            { id: "sky", label: "Cielo" },
+            { id: "sand", label: "Sabbia" },
+            { id: "rose", label: "Rosa" }
+          ].map((t) => `
+            <button class="chip ${t.id === state.profile.theme ? "active" : ""}" data-theme="${t.id}">${t.label}</button>
+          `).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-row">
+          <div>
+            <div class="card-title">Colore</div>
+            <div class="card-sub">Accento principale</div>
+          </div>
+          <button class="pill-btn ghost">Azione</button>
+        </div>
+        <div class="chip-row">
+          ${[
+            { id: "sage", label: "Verde" },
+            { id: "sky", label: "Blu" },
+            { id: "sand", label: "Duna" },
+            { id: "rose", label: "Rosa" }
+          ].map((t) => `
+            <button class="chip ${t.id === state.profile.accent ? "active" : ""}" data-accent="${t.id}">${t.label}</button>
+          `).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-row">
+          <div>
             <div class="card-title">Notifiche</div>
             <div class="card-sub">Reminder check-in</div>
           </div>
@@ -722,6 +827,24 @@
       saveState(state);
       $("#rem").textContent = state.profile.reminders ? "ON" : "OFF";
       showToast("Reminder: " + (state.profile.reminders ? "ON" : "OFF"));
+    });
+    view.querySelectorAll("[data-theme]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        view.querySelectorAll("[data-theme]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.profile.theme = btn.dataset.theme;
+        saveState(state);
+        applyTheme();
+      });
+    });
+    view.querySelectorAll("[data-accent]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        view.querySelectorAll("[data-accent]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.profile.accent = btn.dataset.accent;
+        saveState(state);
+        applyTheme();
+      });
     });
     $("#snd").addEventListener("click", () => {
       state.profile.sound = !state.profile.sound;
@@ -798,6 +921,24 @@
       <section class="card">
         <div class="card-row">
           <div>
+            <div class="card-title">Aspetto pet</div>
+            <div class="card-sub">Accessorio semplice</div>
+          </div>
+          <button class="pill-btn ghost">Azione</button>
+        </div>
+        <div class="chip-row">
+          ${[
+            { id: "none", label: "Nessuno" },
+            { id: "halo", label: "Halo" },
+            { id: "star", label: "Stella" }
+          ].map((g) => `
+            <button class="chip ${g.id === (state.profile.petAccessory || "none") ? "active" : ""}" data-accessory="${g.id}">${g.label}</button>
+          `).join("")}
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-row">
+          <div>
             <div class="card-title">Info</div>
             <div class="card-sub">AURA - Studio Zen</div>
           </div>
@@ -810,9 +951,17 @@
     `;
     view.querySelectorAll("[data-goal]").forEach((b) => {
       b.addEventListener("click", () => {
-        view.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+        view.querySelectorAll("[data-goal]").forEach((c) => c.classList.remove("active"));
         b.classList.add("active");
         state.profile.goal = b.dataset.goal;
+      });
+    });
+    view.querySelectorAll("[data-accessory]").forEach((b) => {
+      b.addEventListener("click", () => {
+        view.querySelectorAll("[data-accessory]").forEach((c) => c.classList.remove("active"));
+        b.classList.add("active");
+        state.profile.petAccessory = b.dataset.accessory;
+        saveState(state);
       });
     });
     $("#saveP").addEventListener("click", () => {

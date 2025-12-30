@@ -4,6 +4,7 @@
   --card: rgba(255,255,255,.86);
   --ink:#1f2a37;
   --muted:#6f7b88;
+  --accent-soft:#95d5b2;
   --accent:#6fbf9f;
   --accent-strong:#4fa57f;
   --line: rgba(214,223,232,.9);
@@ -19,12 +20,35 @@ body{
   font-family: var(--font-ui);
   color:var(--ink);
   background: var(--bg);
+  background-attachment: fixed;
+}
+body[data-bg="mist"]{
   background-image:
     radial-gradient(circle at 12% 10%, rgba(149,213,178,.28), transparent 40%),
     radial-gradient(circle at 80% 0%, rgba(82,183,136,.18), transparent 35%),
     url("assets/bg.svg");
   background-size: auto, auto, cover;
-  background-attachment: fixed;
+}
+body[data-bg="sky"]{
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(166,216,240,.35), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(120,183,216,.22), transparent 40%),
+    url("assets/bg.svg");
+  background-size: auto, auto, cover;
+}
+body[data-bg="sand"]{
+  background-image:
+    radial-gradient(circle at 12% 15%, rgba(247,212,154,.35), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(242,195,107,.22), transparent 40%),
+    url("assets/bg.svg");
+  background-size: auto, auto, cover;
+}
+body[data-bg="rose"]{
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(242,193,204,.35), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(200,143,160,.2), transparent 40%),
+    url("assets/bg.svg");
+  background-size: auto, auto, cover;
 }
 .app{
   min-height:100vh;
@@ -112,8 +136,8 @@ body{
   cursor:pointer;
 }
 .pill-btn.primary{
-  background: linear-gradient(135deg, rgba(149,213,178,.6), rgba(111,191,159,.9));
-  border-color: rgba(79,165,127,.5);
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+  border-color: var(--accent-strong);
 }
 .pill-btn.ghost{
   background: rgba(255,255,255,.6);
@@ -131,9 +155,9 @@ body{
   cursor:pointer;
 }
 .btn-block.primary{
-  background: linear-gradient(135deg, rgba(149,213,178,.7), rgba(79,165,127,.9));
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent-strong));
   color:#0e1c14;
-  border-color: rgba(79,165,127,.55);
+  border-color: var(--accent-strong);
 }
 .row{display:flex; align-items:center; gap:10px}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
@@ -152,12 +176,113 @@ body{
   background: rgba(255,255,255,.7);
   border:1px solid rgba(214,223,232,.9);
   display:flex; align-items:center; justify-content:center;
+  position:relative;
+  overflow:hidden;
+  transition: transform .3s ease, box-shadow .3s ease;
+  animation: float 4.5s ease-in-out infinite;
 }
-.pet img{width:78px; height:78px}
+.pet img{width:80px; height:80px; transition: transform .3s ease}
+.pet .pet-face{
+  position:absolute;
+  top:36px;
+  left:0;
+  right:0;
+  height:34px;
+  pointer-events:none;
+}
+.pet .eye{
+  position:absolute;
+  width:8px;
+  height:10px;
+  background:#2f3e46;
+  border-radius:8px;
+  top:4px;
+  animation: blink 4s infinite;
+}
+.pet .eye.left{left:36px}
+.pet .eye.right{right:36px}
+.pet .cheek{
+  position:absolute;
+  width:10px;
+  height:8px;
+  border-radius:999px;
+  background: rgba(255, 202, 212, .8);
+  top:16px;
+  opacity:.7;
+}
+.pet .cheek.left{left:28px}
+.pet .cheek.right{right:28px}
+.pet .mouth{
+  position:absolute;
+  left:0; right:0;
+  margin:0 auto;
+  top:18px;
+  width:18px;
+  height:8px;
+  border:2px solid #2f3e46;
+  border-top:none;
+  border-radius:0 0 12px 12px;
+}
+.pet[data-expression="happy"] .mouth{
+  width:20px;
+  height:10px;
+  border-radius:0 0 16px 16px;
+}
+.pet[data-expression="sad"] .mouth{
+  top:22px;
+  border-top:2px solid #2f3e46;
+  border-bottom:none;
+  border-radius:16px 16px 0 0;
+}
+.pet[data-expression="tired"] .eye{
+  height:4px;
+  top:8px;
+  border-radius:6px;
+}
+.pet[data-energy="low"]{
+  transform: translateY(2px) scale(.98);
+}
+.pet .pet-glow{
+  position:absolute;
+  inset:6px;
+  border-radius:22px;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.8), transparent 45%);
+  opacity:.55;
+  mix-blend-mode: screen;
+}
+.pet.is-petted{
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 14px 26px rgba(79,165,127,.2);
+}
+.pet.is-petted img{transform: scale(1.03)}
+.pet[data-accessory="halo"]::after{
+  content:"";
+  position:absolute;
+  top:6px;
+  left:50%;
+  width:34px;
+  height:12px;
+  transform: translateX(-50%);
+  border:2px solid rgba(246,224,122,.9);
+  border-radius:999px;
+  box-shadow: 0 0 12px rgba(246,224,122,.6);
+}
+.pet[data-accessory="star"]::after{
+  content:"";
+  position:absolute;
+  top:8px;
+  right:10px;
+  width:12px;
+  height:12px;
+  background: radial-gradient(circle, rgba(255,234,182,.95), rgba(246,224,122,.7));
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 78% 92%, 50% 70%, 22% 92%, 32% 57%, 2% 35%, 39% 35%);
+  opacity:.9;
+}
 .pet.tiny{
   width:56px;
   height:56px;
   border-radius:16px;
+  animation: none;
 }
 .pet.tiny img{width:44px; height:44px}
 .pet.locked img{filter: grayscale(1) opacity(0.45)}
@@ -282,4 +407,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   border-radius:16px;
   border:1px solid rgba(214,223,232,.9);
   display:block;
+}
+@keyframes float{
+  0%,100%{transform: translateY(0)}
+  50%{transform: translateY(-4px)}
+}
+@keyframes blink{
+  0%, 96%, 100%{transform: scaleY(1)}
+  97%{transform: scaleY(0.15)}
 }
