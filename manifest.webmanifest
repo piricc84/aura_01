@@ -1,0 +1,16 @@
+{
+  "name": "AURA - Studio Zen",
+  "short_name": "AURA",
+  "start_url": "./#/home",
+  "display": "standalone",
+  "background_color": "#F4F7FB",
+  "theme_color": "#95D5B2",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

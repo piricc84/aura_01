@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#95D5B2"/>
+  <link rel="manifest" href="manifest.webmanifest"/>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml"/>
+  <link rel="apple-touch-icon" href="assets/logo.svg"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <title>AURA - Studio Zen</title>
+</head>
+<body>
+  <div id="app" class="app">
+    <main id="view" class="view" aria-live="polite"></main>
+
+    <nav class="bottombar" aria-label="Navigazione">
+      <a class="tab" href="#/home" data-route="/home"><span class="tab-icon" aria-hidden="true"></span><span>Casa</span></a>
+      <a class="tab" href="#/checkin" data-route="/checkin"><span class="tab-icon" aria-hidden="true"></span><span>Check-in</span></a>
+      <a class="tab" href="#/breath" data-route="/breath"><span class="tab-icon" aria-hidden="true"></span><span>Respiro</span></a>
+      <a class="tab" href="#/journal" data-route="/journal"><span class="tab-icon" aria-hidden="true"></span><span>Diario</span></a>
+      <a class="tab" href="#/profile" data-route="/profile"><span class="tab-icon" aria-hidden="true"></span><span>Profilo</span></a>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
